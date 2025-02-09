@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Color Picker</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Additional styles specific to the color picker page */
+    .color-picker {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .color-display {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 20px auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .sliders label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    .sliders input[type="range"] {
+      width: 80%;
+    }
+    .color-codes p {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Color Picker</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="about.html">Sobre Mí</a></li>
+        <li><a href="gallery.html">Galería</a></li>
+        <li><a href="contact.html">Contacto</a></li>
+        <li><a href="colors.html">Colores</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Selecciona un color</h2>
+      <p>Utiliza los controles deslizantes para ajustar el matiz, la saturación y la luminancia. La vista previa del color y los códigos RGB y HEX se actualizarán en tiempo real.</p>
+      <div class="color-picker">
+        <div id="colorDisplay" class="color-display"></div>
+        <div class="sliders">
+          <label for="hue">Matiz (Hue): <span id="hueValue">0</span>°</label>
+          <input type="range" id="hue" min="0" max="360" value="0">
+          <label for="saturation">Saturación (Saturation): <span id="saturationValue">100</span>%</label>
+          <input type="range" id="saturation" min="0" max="100" value="100">
+          <label for="luminance">Luminancia (Luminance): <span id="luminanceValue">50</span>%</label>
+          <input type="range" id="luminance" min="0" max="100" value="50">
+        </div>
+        <div class="color-codes">
+          <p>RGB: <span id="rgbCode">rgb(255, 0, 0)</span></p>
+          <p>HEX: <span id="hexCode">#ff0000</span></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Mi Web Estática</p>
+  </footer>
+
+  <script>
+    // Function to convert HSL to RGB
+    function hslToRgb(h, s, l) {
+      s /= 100;
+      l /= 100;
+      let c = (1 - Math.abs(2 * l - 1)) * s;
+      let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      let m = l - c / 2;
+      let r = 0, g = 0, b = 0;
+      if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+      else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+      else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+      else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+      else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+      else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      return [r, g, b];
+    }
+
+    // Function to convert RGB to HEX
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+      }).join('');
+    }
+
+    // Update the color display and codes
+    function updateColor() {
+      const hue = parseInt(document.getElementById('hue').value);
+      const saturation = parseInt(document.getElementById('saturation').value);
+      const luminance = parseInt(document.getElementById('luminance').value);
+
+      document.getElementById('hueValue').textContent = hue;
+      document.getElementById('saturationValue').textContent = saturation;
+      document.getElementById('luminanceValue').textContent = luminance;
+
+      const hslColor = `hsl(${hue}, ${saturation}%, ${luminance}%)`;
+      document.getElementById('colorDisplay').style.backgroundColor = hslColor;
+
+      const [r, g, b] = hslToRgb(hue, saturation, luminance);
+      document.getElementById('rgbCode').textContent = `rgb(${r}, ${g}, ${b})`;
+      document.getElementById('hexCode').textContent = rgbToHex(r, g, b);
+    }
+
+    // Event listeners for sliders
+    document.getElementById('hue').addEventListener('input', updateColor);
+    document.getElementById('saturation').addEventListener('input', updateColor);
+    document.getElementById('luminance').addEventListener('input', updateColor);
+
+    // Initial update on page load
+    updateColor();
+  </script>
+</body>
+</html>
